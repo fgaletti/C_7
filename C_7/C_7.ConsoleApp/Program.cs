@@ -78,14 +78,15 @@ namespace C_7.ConsoleApp
                     return true;
 
                 case "5":
-                    //Self Reference
+                    //Self Reference  /129
+                    //  // a type can name itself as the concrete type  
                     Balloon b1 = new Balloon();
                     b1.Color = "red";
 
                     Balloon b2 = new Balloon();
                     b2.Color = "red";
 
-                    bool bAreEqual = b1.Equals(b2);
+                    bool bAreEqual = b1.Equals(b2); // equals was implemented 
 
                     Console.WriteLine(bAreEqual);
 
