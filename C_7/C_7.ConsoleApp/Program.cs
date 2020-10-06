@@ -35,6 +35,9 @@ namespace C_7.ConsoleApp
                   
                     IEnumerable<string> filteredNames = names.Where(n => n.Length >= 4);
 
+                    // Create custom extensions
+                    // Test where2: IEnumerable<string> filteredNames11 = names.Where2(n => n.Length >= 4);
+
                     foreach (var name in filteredNames)
                     {
                         Console.WriteLine(name);
