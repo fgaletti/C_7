@@ -27,6 +27,10 @@ namespace C_7.ConsoleApp
             Console.WriteLine("3) PrimeCounts");
             Console.WriteLine("4) PrimeCountsAsync");
             Console.WriteLine("5) Await/Async");
+            Console.WriteLine("6) Go");
+            Console.WriteLine("7) Signaling");
+            Console.WriteLine("8) Task<TResult> /Go chain");
+
             Console.WriteLine("99) EXIT");
             Console.Write("\r\nSelect an option: ");
 
@@ -111,9 +115,50 @@ namespace C_7.ConsoleApp
                     // awaiter.OnCompleted (() =>
                     // { var result = awaiter.GetResult(); statement(s) ...
 
-                    TaskClass.DisplayPrimesCount();
+                    TaskClass.DisplayPrimesCountAsync();
 
                     Console.WriteLine("Finishing Processing Await /Async");
+                    Console.ReadKey();
+                    return true;
+                case "6":
+                    // 594 
+                    // Async / await 
+                    //
+                    TaskClass.Go();
+
+                    Console.WriteLine("Finishing Processing Await /Async");
+                    Console.ReadKey();
+                    return true;
+
+                case "7":
+                    // 572 
+                    // Signaling 
+                    // thread to wait until reveiveing notifications from other threads
+
+                    var signal = new ManualResetEvent(false);
+
+                    new Thread(() =>
+                    {
+                        Console.WriteLine("Waiting for Signal");
+                        signal.WaitOne();
+                        signal.Dispose();
+                        Console.WriteLine("Got Signal");
+                    }).Start();
+
+                    Thread.Sleep(2000);
+                    signal.Set(); // Open the Signal
+
+                    Console.WriteLine("Finishing Signaling");
+                    Console.ReadKey();
+                    return true;
+
+                case "8":
+                    // 598 
+                    // Returt TASK<>  , chain 
+
+                    Task awaitableGo = TaskClass.GoChain();
+                    
+                    Console.WriteLine("Finishing Signaling");
                     Console.ReadKey();
                     return true;
                 case "99":
