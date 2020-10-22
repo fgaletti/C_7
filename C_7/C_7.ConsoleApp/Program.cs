@@ -20,7 +20,7 @@ namespace C_7.ConsoleApp
         {
             Console.Clear();
             Console.WriteLine("Choose an option:");
-            Console.WriteLine("1)  ");
+            Console.WriteLine("1)  Yield1");
             Console.WriteLine("2) ");
           
             Console.WriteLine("99) EXIT");
@@ -29,7 +29,25 @@ namespace C_7.ConsoleApp
             switch (Console.ReadLine())
             {
                 case "1":
+                    CollectClass coll = new CollectClass();
+                    var enumer = coll.GetEnumerator();
 
+                    List<string> Month = new List<string>();
+                    Month.Add("January");
+                    Month.Add("February");
+
+                    IEnumerator<string> iEnumeratorOfString = Month.GetEnumerator();//to convert list into IEnumerator we can invoke the GetEnumerator method   
+                                                                                    //To retrieve all the items from the above IEnumerator object, we cannot use foreach loop instead of that we need to invoke MoveNext() Boolean method.  
+                    while (iEnumeratorOfString.MoveNext())
+                    {
+                        var a = iEnumeratorOfString.Current;
+                    }
+
+                    foreach (int i in CollectClass.GetSomeInteger())
+                    {
+                        Console.WriteLine(i);
+                    }
+                    
                     Console.WriteLine("finishing processing");
                     Console.ReadKey();
                     return true;
