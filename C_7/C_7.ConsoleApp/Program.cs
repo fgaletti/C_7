@@ -136,6 +136,7 @@ namespace C_7.ConsoleApp
                     // thread to wait until reveiveing notifications from other threads
 
                     var signal = new ManualResetEvent(false);
+                    var signal2 = new ManualResetEvent(false); // testing with 2 signals
 
                     new Thread(() =>
                     {
@@ -143,10 +144,21 @@ namespace C_7.ConsoleApp
                         signal.WaitOne();
                         signal.Dispose();
                         Console.WriteLine("Got Signal");
+
+                        //signal 2
+                        Console.WriteLine("22 - Waiting for Signal");
+                        signal2.WaitOne();
+                        signal2.Dispose();
+                        Console.WriteLine("22 Signal");
+
                     }).Start();
 
                     Thread.Sleep(2000);
                     signal.Set(); // Open the Signal
+
+                    //signal 2
+                    Thread.Sleep(2000);
+                    signal2.Set(); // Open the Signal
 
                     Console.WriteLine("Finishing Signaling");
                     Console.ReadKey();
