@@ -9,11 +9,11 @@ namespace C_7.ConsoleApp
 {
     public class TaskClass
     {
-        // 584 awaitable
+        // 584 task does not TIE UP THREADS 
         public static Task<int> GetAnserToLife()
         {
             var tcs = new TaskCompletionSource<int>();
-            var timer = new System.Timers.Timer(1500) { AutoReset = false };
+            var timer = new System.Timers.Timer(2500) { AutoReset = false };
             timer.Elapsed += delegate { timer.Dispose(); tcs.SetResult(42); };
             timer.Start();
             return tcs.Task;
@@ -46,10 +46,16 @@ namespace C_7.ConsoleApp
         // { var result = awaiter.GetResult(); statement(s) ...
         public static async void DisplayPrimesCountAsync()
         {
+            //testing for with AWAIT
+            for (int i = 0; i < 100; i++)
+            {
+                await GetPrimesCountAsync(2, 1000);
+            }
             int result = await GetPrimesCountAsync(2, 10000000);
             Console.WriteLine(result);
         }
 
+        // using awaiter
         public static void DisplayPrimesCount()
         {
             var awaiter = GetPrimesCountAsync(2, 10000000).GetAwaiter();
@@ -120,6 +126,18 @@ namespace C_7.ConsoleApp
         {
             await PrintAnswerToLifeChain();
             Console.WriteLine("Done");
+        }
+
+        // 604 
+
+        static Dictionary<string, string> _cache = new Dictionary<string, string>();
+
+        public  async Task<string> GetWebPageAsync(string uri)
+        {
+            string html;
+            if (_cache.TryGetValue(uri, out html)) return html; //doesm not return to the caller, via continiation
+                                                              //proceed to the next statement 
+            return _cache[uri] = await new WebClient().DownloadStringTaskAsync(uri);
         }
 
     }

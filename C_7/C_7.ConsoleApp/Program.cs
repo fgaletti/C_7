@@ -21,6 +21,8 @@ namespace C_7.ConsoleApp
         {
             Console.Clear();
             Console.WriteLine("Choose an option:");
+            Console.WriteLine("1) Task Continuation awaiter / ContinueWith ");
+
             Console.WriteLine("1) TaskCompletionSource ");
             Console.WriteLine("2) GetAwaiter");
 
@@ -30,6 +32,14 @@ namespace C_7.ConsoleApp
             Console.WriteLine("6) Go");
             Console.WriteLine("7) Signaling");
             Console.WriteLine("8) Task<TResult> /Go chain");
+            Console.WriteLine("9) Shared  Data Instance");
+            Console.WriteLine("10) Shared Data  lambda");
+            Console.WriteLine("11) Shared Data  Static");
+
+            Console.WriteLine("12) GetWebPageAsync - _cache ");
+
+            Console.WriteLine("--- ADVANCE THREADING");
+            Console.WriteLine("13) Lock");
 
             Console.WriteLine("99) EXIT");
             Console.Write("\r\nSelect an option: ");
@@ -37,6 +47,36 @@ namespace C_7.ConsoleApp
             switch (Console.ReadLine())
             {
                 case "1":
+                    // 581
+
+                    Task<int> primeNumberTask = Task.Run(() =>
+                   
+                   Enumerable.Range(2, 3000000).Count(n =>
+                     Enumerable.Range(2, (int)Math.Sqrt(n) - 1).All(i => n % i > 0)));
+
+                   var awaiter = primeNumberTask.GetAwaiter();
+                   // var awaiter = primeNumberTask.ConfigureAwait(false).GetAwaiter();
+                    awaiter.OnCompleted(() =>
+                   {
+                       int result = awaiter.GetResult();
+                       Console.WriteLine(result);
+                   });
+
+
+                    // another way to continuation
+                    //primeNumberTask.ContinueWith(ant =>
+                    //{
+                    //    int result = ant.Result;
+                    //    Console.WriteLine(" Continue {0} second: {1} " ,result ,2);
+                    //});
+
+
+
+                    Console.WriteLine("finishing processing TaskCompletionSource");
+                    Console.ReadKey();
+                    return true;
+
+                case "111":
                     // 583
                     var tcs = new TaskCompletionSource<int>();
 
@@ -60,10 +100,10 @@ namespace C_7.ConsoleApp
                 case "2":
                     // 584 
                     // task that dont tie up a thread
-                    var awaiter = TaskClass.GetAnserToLife().GetAwaiter();
-                    awaiter.OnCompleted(() => Console.WriteLine(awaiter.GetResult()));
+                    var awaiter2 = TaskClass.GetAnserToLife().GetAwaiter();
+                    awaiter2.OnCompleted(() => Console.WriteLine(awaiter2.GetResult()));
 
-                    Console.WriteLine("Finishing Processing GetAwaiter");
+                    Console.WriteLine("Finishing Processing TaskCompletionSource");
                     Console.ReadKey();
                     return true;
 
@@ -171,6 +211,101 @@ namespace C_7.ConsoleApp
                     Task awaitableGo = TaskClass.GoChain();
                     
                     Console.WriteLine("Finishing Signaling");
+                    Console.ReadKey();
+                    return true;
+
+                case "9":
+                    // 565
+                    // threads share data if they have common reference to the same object reference
+
+                    ThreadTest tt = new ThreadTest();
+                    new Thread(tt.Go).Start();
+                    tt.Go();
+
+                    Console.WriteLine("finishing shared data");
+                    Console.ReadKey();
+                    return true;
+
+                case "10":
+                    // 565
+                    // threads share data if they have common reference to the same object reference
+                    bool done = false;
+
+                    ThreadStart action = () =>
+                    {
+                        if(!done) { done = true; Console.WriteLine("Done action"); }
+                    };
+
+                    new Thread(() =>
+                   {
+                       Thread.Sleep(2000);
+                       Console.WriteLine(done.ToString());
+                       if (!done) { done = true; Console.WriteLine("Done thread"); }
+                   }).Start();
+
+                    new Thread(action).Start();
+                    action();
+
+                    Console.WriteLine("finishing shared data");
+                    Console.ReadKey();
+                    return true;
+
+                case "12":
+                    // 604
+
+                    TaskClass taskClass = new TaskClass();
+                    var awaiter12 = taskClass.GetWebPageAsync("https://www.yahoo.com").GetAwaiter();
+
+                    awaiter12 = taskClass.GetWebPageAsync("https://www.yahoo.com").GetAwaiter();
+                    if (awaiter12.IsCompleted)
+                        Console.WriteLine(awaiter12.GetResult());
+                    else
+                        awaiter12.OnCompleted(() =>
+                        {
+                            Console.WriteLine(awaiter12.GetResult());
+                        });
+
+                    Console.WriteLine("finishing shared data");
+                    Console.ReadKey();
+                    return true;
+
+                // ADVANCE THREADING ------------------------------
+                case "13":
+                  
+                    // LOCK
+                    new Thread(() =>
+                    {
+                        Thread.Sleep(20);
+                        ThreadSafeClass.Go();
+                    }).Start();
+                    new Thread(() =>
+                    {
+                        Thread.Sleep(20);
+                        ThreadSafeClass.Go();
+                    }).Start();
+
+                    //for (int i = 0; i < 1000; i++)
+                    //{
+                       
+                    //    new Thread(() =>
+                    //    {
+                    //        Thread.Sleep(10);
+                    //        ThreadSafeClass.Go();
+                    //    }).Start();
+                    //    Console.WriteLine("Thread Number: {0}",i.ToString());
+                    //}
+                    for (int i = 0; i < 2000; i++)
+                    {
+
+                        new Thread(() =>
+                        {
+                            Thread.Sleep(10);
+                            ThreadSafeClass.Go();
+                        }).Start();
+                        Console.WriteLine("Thread Number 22: {0}", i.ToString());
+                    }
+
+                    Console.WriteLine("Finishing Lock");
                     Console.ReadKey();
                     return true;
                 case "99":
