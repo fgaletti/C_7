@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace C_7.ConsoleApp
@@ -138,6 +139,22 @@ namespace C_7.ConsoleApp
             if (_cache.TryGetValue(uri, out html)) return html; //doesm not return to the caller, via continiation
                                                               //proceed to the next statement 
             return _cache[uri] = await new WebClient().DownloadStringTaskAsync(uri);
+        }
+
+        //608 progress reporting
+        public static Task Foo(Action<int> onProgressPercentChanged, CancellationToken cancel)
+        {
+            return Task.Run(() =>
+           {
+               for (int i = 0; i < 100; i++)
+               {
+                   Thread.Sleep(100);
+                   if (i % 10 == 0)
+                   {
+                       onProgressPercentChanged(i / 10);
+                   }
+               }
+           });
         }
 
     }

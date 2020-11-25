@@ -37,9 +37,10 @@ namespace C_7.ConsoleApp
             Console.WriteLine("11) Shared Data  Static");
 
             Console.WriteLine("12) GetWebPageAsync - _cache ");
+            Console.WriteLine("13) Async Progress Reporting ");
 
             Console.WriteLine("--- ADVANCE THREADING");
-            Console.WriteLine("13) Lock");
+            Console.WriteLine("14) Lock");
 
             Console.WriteLine("99) EXIT");
             Console.Write("\r\nSelect an option: ");
@@ -269,8 +270,21 @@ namespace C_7.ConsoleApp
                     Console.ReadKey();
                     return true;
 
-                // ADVANCE THREADING ------------------------------
                 case "13":
+                    // 604
+
+                    Action<int> progress = i => Console.WriteLine(i + "%");
+                    CancellationTokenSource cancel = new CancellationTokenSource();
+
+                     TaskClass.Foo(progress, cancel.Token);
+                    cancel.Cancel();
+
+                    Console.WriteLine("Progress..");
+                    Console.ReadKey();
+                    return true;
+
+                // ADVANCE THREADING ------------------------------
+                case "14":
                   
                     // LOCK
                     new Thread(() =>
