@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -41,6 +42,16 @@ namespace C_7.ConsoleApp
 
             Console.WriteLine("--- ADVANCE THREADING");
             Console.WriteLine("14) Lock");
+            Console.WriteLine("15) DeadLock");
+            Console.WriteLine("16) Mutex");
+            Console.WriteLine("17) Semaphore");
+            Console.WriteLine("18) ReadWriterLockSlim");
+            Console.WriteLine("19) AutoResetEvent");
+
+            Console.WriteLine("20) ManualResetEvent");
+            Console.WriteLine("21) Barrier");
+
+            Console.WriteLine("22) PLINQ1");
 
             Console.WriteLine("99) EXIT");
             Console.Write("\r\nSelect an option: ");
@@ -322,13 +333,173 @@ namespace C_7.ConsoleApp
                     Console.WriteLine("Finishing Lock");
                     Console.ReadKey();
                     return true;
+
+                case "15":
+
+                    object locker1 = new object();
+                    object locker2 = new object();
+
+                    new Thread(() =>
+                    {
+                        lock (locker1)
+                        {
+                            Thread.Sleep(1000);
+                            lock (locker2) ; // deadlock
+                        }
+                    }).Start();
+
+                    lock(locker2)
+                    {
+                        Thread.Sleep(1000);
+                        lock (locker1) ; //DeadLock
+                    }
+
+                    Console.WriteLine("Finishing DeadLock");
+                    Console.ReadKey();
+                    return true;
+                case "16":
+
+                    // Create the threads that will use the protected resource.
+                    for (int i = 0; i < numThreads; i++)
+                    {
+                        Thread newThread = new Thread(new ThreadStart(ThreadProc));
+                        newThread.Name = String.Format("Thread{0}", i + 1);
+                        newThread.Start();
+                    }
+
+                    Console.WriteLine("Finishing mutex");
+                    Console.ReadKey();
+                    return true;
+
+                case "17":
+
+                    // SEMAPHORE
+
+                    for (int i = 0; i < 5; i++)
+                    {
+                        new Thread(ThreadTest.Enter).Start(i);
+                    }
+
+                    Console.WriteLine("Finishing DeadLock");
+                    Console.ReadKey();
+                    return true;
+
+               
+
+                case "18":
+
+                    // ReadWriterLockSlim
+
+                    new Thread(ThreadTest.Read).Start();
+                    new Thread(ThreadTest.Read).Start();
+                    new Thread(ThreadTest.Read).Start();
+
+                    new Thread(ThreadTest.Write).Start("A");
+                    new Thread(ThreadTest.Write).Start("B");
+
+                    Console.WriteLine("Finishing DeadLock");
+                    Console.ReadKey();
+                    return true;
+
+                case "19":
+                    // AutoReset
+                    new Thread(Waiter).Start();
+                    Thread.Sleep(1000); // pause
+                    _waitHandle.Set(); // wake up the waiter
+
+                    Console.WriteLine("Finishing AutoReset");
+                    Console.ReadKey();
+                    return true;
+                case "20":
+                    // ManualReset
+
+                    Console.WriteLine("Finishing AutoReset");
+                    Console.ReadKey();
+                    return true;
+                case "21":
+                    // barrien
+                    new Thread(ThreadTest.Speak).Start();
+                    new Thread(ThreadTest.Speak).Start();
+                    new Thread(ThreadTest.Speak).Start();
+
+                    Console.WriteLine("Finishing Barrier");
+                    Console.ReadKey();
+                    return true;
+                case "22":
+                    // PLINQ1
+                    IEnumerable<int> numbers = Enumerable.Range(3, 5000000 - 3);
+
+                    var parallelQuery = from n in numbers//.AsParallel()
+                                        where Enumerable.Range(2, (int) Math.Sqrt(n)).All
+                                        (i => n % i > 0)
+                                        select n;
+
+                    Stopwatch s = Stopwatch.StartNew();
+                    int[] primes = parallelQuery.ToArray();
+                    Console.WriteLine(s.Elapsed);
+
+                    Console.WriteLine("Finishing Barrier");
+                    Console.ReadKey();
+                    return true;
                 case "99":
                     Environment.Exit(0);
                     return true;
                 default:
                     return true;
             }
+
         }
+
+        //auto
+        static EventWaitHandle _waitHandle = new AutoResetEvent(false);
+        static void Waiter()
+        {
+            Console.WriteLine("Waiting" );
+            _waitHandle.WaitOne();
+            Console.WriteLine("Notified");
+        }
+
+        // mutex
+        private static Mutex mut = new Mutex();
+        private const int numIterations = 1;
+        private const int numThreads = 2;
+
+        private static void ThreadProc()
+        {
+            for (int i = 0; i < numIterations; i++)
+            {
+                UseResource();
+            }
+        }
+
+        // This method represents a resource that must be synchronized
+        // so that only one thread at a time can enter.
+        private static void UseResource()
+        {
+            // Wait until it is safe to enter.
+            Console.WriteLine("{0} is requesting the mutex",
+                              Thread.CurrentThread.Name);
+            mut.WaitOne();
+
+            Console.WriteLine("{0} has entered the protected area",
+                              Thread.CurrentThread.Name);
+
+            // Place code to access non-reentrant resources here.
+
+            // Simulate some work.
+            Thread.Sleep(500);
+
+            Console.WriteLine("{0} is leaving the protected area",
+                Thread.CurrentThread.Name);
+
+            // Release the Mutex.
+            mut.ReleaseMutex();
+            Console.WriteLine("{0} has released the mutex",
+                Thread.CurrentThread.Name);
+        }
+
+        // end mutex
+
 
     }
 }
