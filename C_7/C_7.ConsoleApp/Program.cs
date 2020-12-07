@@ -52,7 +52,7 @@ namespace C_7.ConsoleApp
             Console.WriteLine("21) Barrier");
 
             Console.WriteLine("22) PLINQ1");
-
+            Console.WriteLine("23) AGGREGATIONS **");
             Console.WriteLine("99) EXIT");
             Console.Write("\r\nSelect an option: ");
 
@@ -437,6 +437,27 @@ namespace C_7.ConsoleApp
                     Stopwatch s = Stopwatch.StartNew();
                     int[] primes = parallelQuery.ToArray();
                     Console.WriteLine(s.Elapsed);
+
+                    Console.WriteLine("Finishing Barrier");
+                    Console.ReadKey();
+                    return true;
+
+                case "23":
+                    // Aggregations
+
+                    IEnumerable<int> ints = new List<int> { 2, 4, 1, 6 };
+                    // Reimplementation of the Sum() method utilizing Aggregate()
+                    // Will return 13
+                    int result23 = ints.Aggregate((sum, val) => sum + val);
+
+                    //1. t is passed 2 and 4 for the sum and val parameters, and returns the sum: 6.
+                    //2 It is passed 6 and 1 for sum and val, and returns 7.
+                    // It is passed 7 and 6 and returns 13.
+
+                    IEnumerable<string> strings = new List<string> { "a", "ab", "abc", "abcd", "z" };
+                    // Will return "a&ab&abc&abcd&z"
+                    string result23Str = strings.Aggregate((concat, str) => $"{concat}&{str}");
+
 
                     Console.WriteLine("Finishing Barrier");
                     Console.ReadKey();
