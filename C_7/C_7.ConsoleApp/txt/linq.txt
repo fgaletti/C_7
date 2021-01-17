@@ -1,0 +1,12 @@
+﻿
+
+Sql = Where in  -> Contains
+
+string[] chooses
+
+----
+
+Join / GroupJoin
+  -- good for local
+  --DO NOT OFFER : cross join , non-equi joins
+
